@@ -74,7 +74,7 @@
   /* For example: adding a new parameter or changing the order of parameters in app_settings_wisun_t or app_wisun_parameters_t. */
   /* After updating the application with a new NVM3_APP_PARAMS_VERSION,                                                         */
   /*    the parameters will be reset to the new default values (when the code detects a change in NVM3_APP_PARAMS_VERSION)      */
-  #define NVM3_APP_PARAMS_VERSION   10011
+  #define NVM3_APP_PARAMS_VERSION   10015
 #endif /* NVM3_APP_PARAMS_VERSION */
 
 #ifndef   MAX_NETWORK_CONFIGS
