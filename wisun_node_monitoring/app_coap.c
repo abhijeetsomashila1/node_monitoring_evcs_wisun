@@ -122,7 +122,8 @@ sl_wisun_statistics_t statistics;
 // -----------------------------------------------------------------------------
 static uint32_t app_scheduler_reconnect_cb(void *context);
 static uint32_t app_scheduler_clear_and_reconnect_cb(void *context);
-
+static sl_wisun_coap_packet_t *coap_callback_evon(const sl_wisun_coap_packet_t *req_packet);
+static sl_wisun_coap_packet_t *coap_callback_evoff(const sl_wisun_coap_packet_t *req_packet);
 static uint32_t app_scheduler_reconnect_cb(void *context)
 {
   (void)context;
@@ -993,6 +994,22 @@ uint8_t app_coap_resources_init() {
   uint8_t count = 0;
 
   // Add CoAP resources (one per item)
+  coap_resource.data.uri_path = "/evon";
+  coap_resource.data.resource_type = "json";
+  coap_resource.data.interface = "test";
+  coap_resource.auto_response = coap_callback_evon;
+  coap_resource.discoverable = true;
+  assert(sl_wisun_coap_rhnd_resource_add(&coap_resource) == SL_STATUS_OK);
+  count++;
+
+  coap_resource.data.uri_path = "/evoff";
+  coap_resource.data.resource_type = "json";
+  coap_resource.data.interface = "test";
+  coap_resource.auto_response = coap_callback_evoff;
+  coap_resource.discoverable = true;
+  assert(sl_wisun_coap_rhnd_resource_add(&coap_resource) == SL_STATUS_OK);
+  count++;
+
 
   coap_resource.data.uri_path = "/info/all";
   coap_resource.data.resource_type = "json";
@@ -1316,4 +1333,31 @@ uint8_t app_coap_resources_init() {
   #endif
   return count;
 }
+
+static sl_wisun_coap_packet_t *coap_callback_evon(const sl_wisun_coap_packet_t *req_packet)
+{
+    printf("\nCoAP /evon Request received\n");
+
+    // Create simple response
+    snprintf(coap_response, COAP_MAX_RESPONSE_LEN,
+             "{\n  \"status\": \"Relay ON\",\n  \"message\": \"This is a test endpoint.\"\n}");
+
+    printf("CoAP Response: %s", coap_response);
+
+    return app_coap_reply(coap_response, req_packet);
+}
+
+static sl_wisun_coap_packet_t *coap_callback_evoff(const sl_wisun_coap_packet_t *req_packet)
+{
+    printf("\nCoAP /evoff Request received\n");
+
+    // Create simple response
+    snprintf(coap_response, COAP_MAX_RESPONSE_LEN,
+             "{\n  \"status\": \"Relay OFF\",\n  \"message\": \"This is a test endpoint.\"\n}");
+
+    printf("CoAP Response: %s", coap_response);
+
+    return app_coap_reply(coap_response, req_packet);
+}
+
 #endif /* SL_CATALOG_WISUN_COAP_PRESENT */
